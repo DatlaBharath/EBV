@@ -1,0 +1,35 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/Ebv.sol": {
+      "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.8;\r\ncontract Ebv {\r\n    struct user {\r\n        string name;\r\n        address add;\r\n    }\r\n    struct document{\r\n        string docName;\r\n        string docId;\r\n    }\r\n    mapping(address => document[]) userData;\r\n    address immutable public i_owner;\r\n    string private i_ownerName = \"bharath\";\r\n    string ipfsHash;\r\n    user[] public candidate;\r\n    user[] public recruiter;\r\n    bytes32[] public arrHash;\r\n    constructor() {\r\n        i_owner = msg.sender;\r\n    }\r\n    function addCandidateUser(string memory _username,address _address) public{\r\n        uint check = 0;\r\n        for(uint256 i=0;i<candidate.length;i++){\r\n            if(candidate[i].add == _address){\r\n                check = 1;\r\n            }\r\n        }\r\n        if(check == 0){\r\n            candidate.push(user(_username,_address));\r\n        }\r\n    }\r\n    function addRecruiterUser(string memory _username,address _address) public{\r\n        uint check = 0;\r\n        for(uint256 i=0;i<candidate.length;i++){\r\n            if(candidate[i].add == _address){\r\n                check = 1;\r\n            }\r\n        }\r\n        if(check == 0){\r\n            recruiter.push(user(_username,_address));\r\n        }\r\n    }\r\n    function candidateValidate(string memory _username,address _address) public view returns(bool){\r\n        for(uint256 i=0;i<candidate.length;i++){\r\n            if(candidate[i].add == _address){\r\n                return keccak256(abi.encodePacked(candidate[i].name)) == keccak256(abi.encodePacked(_username));\r\n            }\r\n        }\r\n        return false;\r\n    }\r\n    function recruiterValidate(string memory _username,address _address) public view returns(bool){\r\n        for(uint256 i=0;i<recruiter.length;i++){\r\n            if(recruiter[i].add == _address){\r\n                return keccak256(abi.encodePacked(recruiter[i].name)) == keccak256(abi.encodePacked(_username));\r\n            }\r\n        }\r\n        return false;\r\n    }\r\n    function uplodeCandidateDocument(string memory _docName, string memory _docId) public{\r\n        userData[msg.sender].push(document(_docName,_docId));\r\n    }\r\n    function documentPush(string memory _docName) public view returns(bytes32){\r\n        for(uint256 i=0;i<userData[msg.sender].length;i++){\r\n            if (keccak256(abi.encodePacked(userData[msg.sender][i].docName)) == keccak256(abi.encodePacked(_docName))){\r\n                return keccak256(abi.encode(userData[msg.sender][i]));\r\n            }\r\n        }\r\n        return 0;\r\n    }\r\n    function hashArray(string memory _docName,string memory _docId) public ownerPower{\r\n        document memory doc = document(_docName,_docId);\r\n        arrHash.push(keccak256(abi.encode(doc)));\r\n    }\r\n    \r\n    function storePDF(string memory _ipfsHash) public {\r\n        ipfsHash = _ipfsHash;\r\n    }\r\n    \r\n    function getPDF() public view returns (string memory) {\r\n        return ipfsHash;\r\n    }\r\n    modifier ownerPower(){\r\n        if(msg.sender == i_owner){_;}\r\n    }\r\n}"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}
